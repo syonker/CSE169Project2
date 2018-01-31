@@ -24,6 +24,8 @@ Joint::Joint()
 	//jointDOF->at(1) = xDOF;
 	//jointDOF->at(2) = xDOF;
 
+	DOFnum = 0;
+
 }
 
 Joint::~Joint()
@@ -148,6 +150,20 @@ void Joint::Draw(const glm::mat4 &viewProjMtx, uint shader) {
 	for (unsigned int i = 0; i < children.size(); i++) {
 
 		children[i]->Draw(viewProjMtx, shader);
+
+	}
+
+}
+
+
+
+void Joint::makeJointVector(std::vector<Joint*>* joints) {
+
+	joints->push_back(this);
+
+	for (unsigned int i = 0; i < children.size(); i++) {
+
+		children[i]->makeJointVector(joints);
 
 	}
 

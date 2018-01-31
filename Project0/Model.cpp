@@ -11,6 +11,7 @@ Model::Model() {
 	glGenBuffers(1,&IndexBuffer);
 
 	Count=0;
+	ambient = {1,1,0};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,9 @@ void Model::Draw(const glm::mat4 &modelMtx,const glm::mat4 &viewProjMtx,uint sha
 
 	glm::mat4 mvpMtx=viewProjMtx * modelMtx;
 	glUniformMatrix4fv(glGetUniformLocation(shader,"ModelViewProjMtx"),1,false,(float*)&mvpMtx);
+
+	//send over ambient color
+	glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
 
 	// Set up state
 	glBindBuffer(GL_ARRAY_BUFFER,VertexBuffer);

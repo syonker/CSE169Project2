@@ -5,6 +5,7 @@
 #include "DOF.h"
 #include "Tokenizer.h"
 #include "Model.h"
+#include <iostream>
 
 
 class Joint
@@ -18,6 +19,9 @@ public:
 	void Draw(const glm::mat4 &viewProjMtx, uint shader);
 	bool Load(Tokenizer* token);
 
+
+	void makeJointVector(std::vector<Joint*>* joints);
+
 	std::vector<Joint*> children;
 	std::vector<DOF*> jointDOF;
 	glm::vec3 offset;
@@ -25,6 +29,7 @@ public:
 	glm::vec3 boxmax;
 	glm::vec3 pose;
 	int DOFcount;
+	int DOFnum;
 	glm::mat4 L;
 	glm::mat4 W;
 	Model* model;

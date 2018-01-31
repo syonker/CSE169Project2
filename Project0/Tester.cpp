@@ -62,8 +62,8 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	glEnable(GL_CULL_FACE);
 
 	// Initialize components
-	Program=new ShaderProgram("Model.glsl",ShaderProgram::eRender);
-	Cube=new SpinningCube;
+	Program=new ShaderProgram("Modify.glsl",ShaderProgram::eRender);
+	Cube = new SpinningCube;
 	Cam=new Camera;
 	Cam->SetAspect(float(WinX)/float(WinY));
 
@@ -128,6 +128,12 @@ void Tester::Draw() {
 	glViewport(0, 0, WinX, WinY);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	float color = 1.0f;
+
+	color = ((float)(currSkel->activeJoint->DOFnum + 1) / (float)(currSkel->activeJoint->DOFcount));
+
+	currSkel->activeJoint->model->ambient = {0.0f,1.0f,color};
+
 	// Draw components
 	//Cube->Draw(Cam->GetViewProjectMtx(),Program->GetProgramID());
 
@@ -135,6 +141,8 @@ void Tester::Draw() {
 	//wasp->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 	//dragon->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 	currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
+
+
 
 	// Finish drawing scene
 	glFinish();
@@ -178,6 +186,12 @@ void Tester::Keyboard(int key,int x,int y) {
 			break;
 		case '4':
 			currSkel = spider;
+			break;
+		case 'u':
+			currSkel->upSelection();
+			break;
+		case 'd':
+			currSkel->downSelection();
 			break;
 	}
 }

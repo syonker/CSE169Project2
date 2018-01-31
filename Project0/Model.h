@@ -25,6 +25,8 @@ public:
 	void MakeBox(const glm::vec3 &boxMin,const glm::vec3 &boxMax);
 	void SetBuffers(const std::vector<ModelVertex> &vtx,const std::vector<uint> &idx);
 
+
+	glm::vec3 ambient;
 	// Access functions
 
 private:
@@ -32,6 +34,7 @@ private:
 	uint IndexBuffer;
 
 	int Count;
+	
 };
 
 ////////////////////////////////////////////////////////////////////////////////
