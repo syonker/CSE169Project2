@@ -5,8 +5,6 @@ Skin::Skin(Skeleton* skel) {
 
 	skeleton = skel;
 
-	BindShader();
-
 }
 
 Skin::~Skin() {
@@ -96,12 +94,16 @@ bool Skin::Load(const char *file) {
 	for (int count = 1; count <= numV; count++) {
 
 		x = token->GetFloat();
-		x = token->GetFloat();
+		y = token->GetFloat();
 		z = token->GetFloat();
 
 		Vertex* newVertex = new Vertex(x,y,z);
 
 		vertices.push_back(newVertex);
+
+		shaderVerts.push_back(x);
+		shaderVerts.push_back(y);
+		shaderVerts.push_back(z);
 
 	}
 
@@ -117,10 +119,14 @@ bool Skin::Load(const char *file) {
 	for (int count = 1; count <= numV; count++) {
 
 		x = token->GetFloat();
-		x = token->GetFloat();
+		y = token->GetFloat();
 		z = token->GetFloat();
 
 		vertices[count - 1]->SetNormal(x,y,z);
+
+		shaderNormals.push_back(x);
+		shaderNormals.push_back(y);
+		shaderNormals.push_back(z);
 
 	}
 
@@ -160,11 +166,17 @@ bool Skin::Load(const char *file) {
 	int numT = token->GetFloat();
 	token->FindToken("{");
 
+	unsigned int v1, v2, v3;
+
 	for (int count = 1; count <= numT; count++) {
 
-		shaderIndices.push_back(token->GetFloat());
-		shaderIndices.push_back(token->GetFloat());
-		shaderIndices.push_back(token->GetFloat());
+		v1 = token->GetFloat();
+		v2 = token->GetFloat();
+		v3 = token->GetFloat();
+
+		shaderIndices.push_back(v1);
+		shaderIndices.push_back(v2);
+		shaderIndices.push_back(v3);
 
 	}
 
@@ -198,8 +210,6 @@ bool Skin::Load(const char *file) {
 	
 	token->FindToken("}");
 
-	//std::cerr << "Final Count: " << joints.size() << std::endl;
-
 
 	// Finish
 	token->Close();
@@ -210,7 +220,16 @@ bool Skin::Load(const char *file) {
 void Skin::Update(glm::mat4 parentW) {
 
 
+
+	SyncShaderArrays();
 }
+
+
+void Skin::SyncShaderArrays() {
+
+
+}
+
 
 void Skin::Draw(const glm::mat4 &viewProjMtx, uint shader) {
 

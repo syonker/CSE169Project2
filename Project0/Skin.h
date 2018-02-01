@@ -21,6 +21,7 @@ public:
 	void Update(glm::mat4 parentW);
 	void Draw(const glm::mat4 &viewProjMtx, uint shader);
 	void BindShader();
+	void SyncShaderArrays();
 
 	unsigned int numV;
 	std::vector<Vertex*> vertices;

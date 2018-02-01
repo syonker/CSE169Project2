@@ -118,6 +118,12 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	currSkel = test;
 
 
+
+	tubeSkin = new Skin(test);
+
+	tubeSkin->Load("../skins/tube.skin");
+
+
 	
 
 }

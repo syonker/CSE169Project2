@@ -10,6 +10,8 @@
 #include "Skeleton.h"
 #include "Joint.h"
 #include "DOF.h"
+#include "Skin.h"
+#include "Vertex.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +55,9 @@ private:
 	Skeleton* dragon;
 	Skeleton* spider;
 	Skeleton* currSkel;
+
+	Skin* tubeSkin;
+	Skin* waspSkin;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
