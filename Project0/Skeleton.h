@@ -22,10 +22,14 @@ public:
 	void upSelection();
 	void downSelection();
 
+	void incDOF();
+	void decDOF();
+
 	Joint* root;
 	Joint* activeJoint;
 	DOF* activeDOF;
 	int jointNum;
+	float increment;
 	std::vector<Joint*> joints;
 
 private:

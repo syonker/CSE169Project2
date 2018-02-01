@@ -8,6 +8,8 @@ Skeleton::Skeleton()
 
 	root = NULL;
 
+	increment = 0.1f;
+
 }
 
 Skeleton::~Skeleton()
@@ -19,9 +21,10 @@ bool Skeleton::Load(const char *file) {
 	
 	if (file == "") {
 
-		file = "../skeletons/test.skel";
+		file = "../skeletons/wasp.skel";
 	}
 
+	std::cerr << "file: " << file << std::endl;
 
 	Tokenizer* token = new Tokenizer();
 	//token->Open(file, "skel");
@@ -29,16 +32,19 @@ bool Skeleton::Load(const char *file) {
 	token->FindToken("balljoint");
 	// Parse tree
 	root = new Joint();
-	root->Load(token);
+	joints.push_back(root);
+	root->Load(token, &joints);
 
 
-	makeJointVector();
+	std::cerr << "Final Count: " << joints.size() << std::endl;
+
+	//makeJointVector();
 	jointNum = 0;
 
 	activeJoint = root;
 	activeDOF = root->jointDOF[0];
 
-	//std::cerr << "Final Count: " << joints.size() << std::endl;
+	
 
 
 	// Finish
@@ -70,9 +76,13 @@ void Skeleton::makeJointVector() {
 
 void Skeleton::upSelection() {
 
+	
+
 	Joint* currJoint = joints[jointNum];
 
-	if (currJoint->DOFnum < currJoint->DOFcount) {
+	std::cerr << "DOFnum: " << currJoint->DOFnum << " count: " << currJoint->DOFcount << std::endl;
+
+	if (currJoint->DOFnum < currJoint->DOFcount-1) {
 
 		//do the thing at DOFnum
 		activeDOF = currJoint->jointDOF[currJoint->DOFnum];
@@ -81,6 +91,8 @@ void Skeleton::upSelection() {
 
 	}
 	else {
+
+		joints[jointNum]->model->ambient = { 1,1,0 };
 
 		if (jointNum < joints.size()-1) {
 
@@ -95,6 +107,7 @@ void Skeleton::upSelection() {
 		
 
 		joints[jointNum]->DOFnum = 0;
+		activeJoint = joints[jointNum];
 
 
 	}
@@ -104,6 +117,7 @@ void Skeleton::upSelection() {
 
 void Skeleton::downSelection() {
 
+	std::cerr << "downSelection" << std::endl;
 
 	Joint* currJoint = joints[jointNum];
 
@@ -117,6 +131,8 @@ void Skeleton::downSelection() {
 	}
 	else {
 
+		joints[jointNum]->model->ambient = { 1,1,0 };
+
 		if (jointNum > 0) {
 
 			jointNum--;
@@ -129,8 +145,21 @@ void Skeleton::downSelection() {
 		}
 
 		joints[jointNum]->DOFnum = 2;
+		activeJoint = joints[jointNum];
 
 
 	}
+
+}
+
+void Skeleton::incDOF() {
+
+	activeDOF->Add(increment);
+
+}
+
+void Skeleton::decDOF() {
+
+	activeDOF->Add(-increment);
 
 }

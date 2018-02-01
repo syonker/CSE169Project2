@@ -40,3 +40,11 @@ void DOF::SetMinMax(float minValue, float maxValue) {
 	max = maxValue;
 
 }
+
+float DOF::Add(float addVal) {
+
+	value += addVal;
+
+	return value;
+
+}

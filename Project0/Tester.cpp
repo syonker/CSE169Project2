@@ -68,14 +68,44 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	Cam->SetAspect(float(WinX)/float(WinY));
 
 
+
 	//Prep Skeletons
 	test = new Skeleton();
 	wasp = new Skeleton();
 	dragon = new Skeleton();
 	spider = new Skeleton();
 
-	test->Load("");
+	//test->Load("");
 	//test->Load("../skeletons/test.skel");
+	
+
+	//std::cerr << "argc: " << argc << std::endl;
+
+	//std::cerr << "argv: " << argv[1] << std::endl;
+
+
+	if (argc > 1) {
+
+		std::string start = argv[1];
+
+		std::string begin = "../skeletons/";
+
+		start = begin + start;
+
+		//start = "../skeletons/" + argv[1];
+
+		const char *mycharp = start.c_str();
+
+		test->Load(mycharp);
+
+	}
+	else {
+
+		test->Load("");
+
+	}
+
+
 	wasp->Load("../skeletons/wasp.skel");
 	dragon->Load("../skeletons/dragon.skel");
 	spider->Load("../skeletons/spider.skel");
@@ -86,6 +116,9 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	spider->Update(glm::mat4(1.0f));
 
 	currSkel = test;
+
+
+	
 
 }
 
@@ -106,6 +139,8 @@ void Tester::Update() {
 	// Update the components in the world
 	Cube->Update();
 	Cam->Update();
+
+	currSkel->Update(glm::mat4(1.0f));
 
 	// Tell glut to re-display the scene
 	glutSetWindow(WindowHandle);
@@ -132,7 +167,7 @@ void Tester::Draw() {
 
 	color = ((float)(currSkel->activeJoint->DOFnum + 1) / (float)(currSkel->activeJoint->DOFcount));
 
-	currSkel->activeJoint->model->ambient = {0.0f,1.0f,color};
+	currSkel->activeJoint->model->ambient = { color,color,color};
 
 	// Draw components
 	//Cube->Draw(Cam->GetViewProjectMtx(),Program->GetProgramID());
@@ -187,11 +222,17 @@ void Tester::Keyboard(int key,int x,int y) {
 		case '4':
 			currSkel = spider;
 			break;
-		case 'u':
+		case 'd':
 			currSkel->upSelection();
 			break;
-		case 'd':
+		case 'a':
 			currSkel->downSelection();
+			break;
+		case 'w':
+			currSkel->incDOF();
+			break;
+		case 's':
+			currSkel->decDOF();
 			break;
 	}
 }

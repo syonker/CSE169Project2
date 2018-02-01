@@ -8,7 +8,7 @@ Joint::Joint()
 	boxmin = { 0.0f,0.0f,0.0f };
 	boxmax = { 0.0f,0.0f,0.0f };
 	pose = { 0.0f,0.0f,0.0f };
-	int DOFcount = 3;
+	DOFcount = 3;
 	L = glm::mat4(1.0f);
 	W = glm::mat4(1.0f);
 
@@ -32,7 +32,7 @@ Joint::~Joint()
 {
 }
 
-bool Joint::Load(Tokenizer* token) {
+bool Joint::Load(Tokenizer* token, std::vector<Joint*>* joints) {
 
 	float min, max;
 
@@ -77,7 +77,8 @@ bool Joint::Load(Tokenizer* token) {
 		}
 		else if (strcmp(temp, "balljoint") == 0) {
 			Joint *jnt = new Joint();
-			jnt->Load(token);
+			joints->push_back(jnt);
+			jnt->Load(token, joints);
 			AddChild(jnt);
 		}
 		else if (strcmp(temp, "}") == 0) {
