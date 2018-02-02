@@ -219,16 +219,74 @@ bool Skin::Load(const char *file) {
 
 void Skin::Update(glm::mat4 parentW) {
 
+	glm::vec4 updatedVec;
+	Vertex* currV;
+
+	//for each vertex on the skin
+	for (int i = 0; i < numV; i++) {
+
+		updatedVec = { 0,0,0,0 };
+
+		currV = vertices[i];
+
+		//for each joint it is attatched to
+		for (int j = 0; j < currV->joints.size(); j++) {
+
+			updatedVec += (currV->weights[j] * ((currV->joints[i]->W)*(currV->joints[i]->Binv)*(glm::vec4(currV->position,1.0f))));
 
 
-	SyncShaderArrays();
+		}
+
+		//prepare the array that will be used for drawing
+		shaderVerts[(3 * i)] = updatedVec.x;
+		shaderVerts[(3 * i)+1] = updatedVec.y;
+		shaderVerts[(3 * i)+2] = updatedVec.z;
+
+
+	}
+
+
+
+	glm::vec4 updatedNormal;
+	//Vertex* currV;
+	glm::vec3 currNormal;
+	glm::mat4 M;
+
+	//for each normal on the skin
+	for (int i = 0; i < numV; i++) {
+
+		updatedNormal = { 0,0,0,0 };
+
+		currV = vertices[i];
+
+		currNormal = currV->normal;
+
+		//for each joint it is attatched to
+		for (int j = 0; j < currV->joints.size(); j++) {
+
+			M = (currV->joints[i]->W)*(currV->joints[i]->Binv);
+			M = glm::inverse(M);
+			M = glm::transpose(M);
+
+			updatedNormal += (currV->weights[j] * (M*(glm::vec4(currNormal, 0.0f))));
+
+
+		}
+
+		updatedNormal = glm::normalize(updatedNormal);
+
+		//prepare the array that will be used for drawing
+		shaderVerts[(3 * i)] = updatedNormal.x;
+		shaderVerts[(3 * i) + 1] = updatedNormal.y;
+		shaderVerts[(3 * i) + 2] = updatedNormal.z;
+
+
+	}
+
+
 }
 
 
-void Skin::SyncShaderArrays() {
-
-
-}
 
 
 void Skin::Draw(const glm::mat4 &viewProjMtx, uint shader) {
