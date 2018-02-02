@@ -187,17 +187,31 @@ bool Skin::Load(const char *file) {
 	token->FindToken("bindings");
 	int numJ = token->GetFloat();
 	token->FindToken("{");
+	float ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz;
 
 	for (int count = 1; count <= numJ; count++) {
 
 		token->FindToken("matrix");
 		token->FindToken("{");
 
+		ax = token->GetFloat();
+		ay = token->GetFloat();
+		az = token->GetFloat();
+		bx = token->GetFloat();
+		by = token->GetFloat();
+		bz = token->GetFloat();
+		cx = token->GetFloat();
+		cy = token->GetFloat();
+		cz = token->GetFloat();
+		dx = token->GetFloat();
+		dy = token->GetFloat();
+		dz = token->GetFloat();
+
 		glm::mat4 B = 
-			glm::mat4(glm::vec4(token->GetFloat(), token->GetFloat(), token->GetFloat(), 0.0f),
-			glm::vec4(token->GetFloat(), token->GetFloat(), token->GetFloat(), 0.0f),
-			glm::vec4(token->GetFloat(), token->GetFloat(), token->GetFloat(), 0.0f),
-			glm::vec4(token->GetFloat(), token->GetFloat(), token->GetFloat(), 1.0f));
+			glm::mat4(glm::vec4(ax,ay,az,0.0f),
+			glm::vec4(bx, by, bz, 0.0f),
+			glm::vec4(cx, cy, cz, 0.0f),
+			glm::vec4(dx, dy, dz, 1.0f));
 
 		skeleton->joints[count - 1]->Binv = glm::inverse(B);
 
@@ -255,7 +269,7 @@ void Skin::Update(glm::mat4 parentW) {
 	//for each normal on the skin
 	for (int i = 0; i < numV; i++) {
 
-		updatedNormal = { 0,0,0,0 };
+		updatedNormal = {  0,0,0,0 };
 
 		currV = vertices[i];
 
@@ -292,10 +306,40 @@ void Skin::Update(glm::mat4 parentW) {
 void Skin::Draw(const glm::mat4 &viewProjMtx, uint shader) {
 
 	//send things to shader
+	// Set up shader
+	glUseProgram(shader);
+	//glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
 
+	glm::mat4 mvpMtx = viewProjMtx * glm::mat4(1.0f);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewProjMtx"), 1, false, (float*)&mvpMtx);
+
+	//send over ambient color
+	//glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
+
+
+
+
+	//send over arrays and draw
 	glBindVertexArray(VAO);
+
+	//send over updated positions
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//send over updated normals
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//draw
 	glDrawElements(GL_TRIANGLES, (GLsizei)shaderIndices.size(), GL_UNSIGNED_INT, 0);
+
 	glBindVertexArray(0);
+
+
+	
+	glUseProgram(0);
 
 
 }

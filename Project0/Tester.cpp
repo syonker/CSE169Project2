@@ -122,6 +122,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	tubeSkin = new Skin(test);
 
 	tubeSkin->Load("../skins/tube.skin");
+	tubeSkin->Update(glm::mat4(1.0f));
 
 
 	
@@ -147,6 +148,7 @@ void Tester::Update() {
 	Cam->Update();
 
 	currSkel->Update(glm::mat4(1.0f));
+
 
 	// Tell glut to re-display the scene
 	glutSetWindow(WindowHandle);
