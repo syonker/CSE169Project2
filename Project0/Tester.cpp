@@ -63,7 +63,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 	// Initialize components
 	Program=new ShaderProgram("Modify.glsl",ShaderProgram::eRender);
-	Cube = new SpinningCube;
+	//Cube = new SpinningCube;
 	Cam=new Camera;
 	Cam->SetAspect(float(WinX)/float(WinY));
 
@@ -86,6 +86,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 	if (argc > 1) {
 
+		/*
 		std::string start = argv[1];
 
 		std::string begin = "../skeletons/";
@@ -97,6 +98,8 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 		const char *mycharp = start.c_str();
 
 		test->Load(mycharp);
+		*/
+		test->Load("../skeletons/tube.skel");
 
 	}
 	else {
@@ -133,7 +136,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 Tester::~Tester() {
 	delete Program;
-	delete Cube;
+	//delete Cube;
 	delete Cam;
 
 	glFinish();
@@ -144,10 +147,12 @@ Tester::~Tester() {
 
 void Tester::Update() {
 	// Update the components in the world
-	Cube->Update();
+	//Cube->Update();
 	Cam->Update();
 
 	currSkel->Update(glm::mat4(1.0f));
+
+	tubeSkin->Update(glm::mat4(1.0f));
 
 
 	// Tell glut to re-display the scene
@@ -161,7 +166,7 @@ void Tester::Reset() {
 	Cam->Reset();
 	Cam->SetAspect(float(WinX)/float(WinY));
 
-	Cube->Reset();
+	//Cube->Reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,8 +188,12 @@ void Tester::Draw() {
 	//test->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 	//wasp->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 	//dragon->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
+
+
 	currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 
+
+	tubeSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 
 
 	// Finish drawing scene

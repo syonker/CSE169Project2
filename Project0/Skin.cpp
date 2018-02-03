@@ -56,6 +56,7 @@ void Skin::BindShader() {
 	// We've sent the vertex data over to OpenGL, but there's still something missing.
 	// In what order should it draw those vertices? That's why we'll need a GL_ELEMENT_ARRAY_BUFFER for this.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*shaderIndices.size(), &shaderIndices[0], GL_STATIC_DRAW);
 
 
@@ -207,11 +208,13 @@ bool Skin::Load(const char *file) {
 		dy = token->GetFloat();
 		dz = token->GetFloat();
 
-		glm::mat4 B = 
-			glm::mat4(glm::vec4(ax,ay,az,0.0f),
-			glm::vec4(bx, by, bz, 0.0f),
-			glm::vec4(cx, cy, cz, 0.0f),
-			glm::vec4(dx, dy, dz, 1.0f));
+		//glm::mat4 B = 
+		//	glm::mat4(glm::vec4(ax,ay,az,0.0f),
+		//	glm::vec4(bx, by, bz, 0.0f),
+		//	glm::vec4(cx, cy, cz, 0.0f),
+		//	glm::vec4(dx, dy, dz, 1.0f));
+
+		glm::mat4 B = glm::mat4(ax, ay, az, 0.0f, bx, by, bz, 0.0f, cx, cy, cz, 0.0f, dx, dy, dz, 1.0f);
 
 		skeleton->joints[count - 1]->Binv = glm::inverse(B);
 
@@ -246,7 +249,7 @@ void Skin::Update(glm::mat4 parentW) {
 		//for each joint it is attatched to
 		for (int j = 0; j < currV->joints.size(); j++) {
 
-			updatedVec += (currV->weights[j] * ((currV->joints[i]->W)*(currV->joints[i]->Binv)*(glm::vec4(currV->position,1.0f))));
+			updatedVec += (currV->weights[j] * ((currV->joints[j]->W)*(currV->joints[j]->Binv)*(glm::vec4(currV->position,1.0f))));
 
 
 		}
@@ -278,7 +281,7 @@ void Skin::Update(glm::mat4 parentW) {
 		//for each joint it is attatched to
 		for (int j = 0; j < currV->joints.size(); j++) {
 
-			M = (currV->joints[i]->W)*(currV->joints[i]->Binv);
+			M = (currV->joints[j]->W)*(currV->joints[j]->Binv);
 			M = glm::inverse(M);
 			M = glm::transpose(M);
 
@@ -308,34 +311,52 @@ void Skin::Draw(const glm::mat4 &viewProjMtx, uint shader) {
 	//send things to shader
 	// Set up shader
 	glUseProgram(shader);
-	//glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
+	
+	glm::mat4 modelMtx = glm::mat4(1.0f);
+	
+	glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
 
-	glm::mat4 mvpMtx = viewProjMtx * glm::mat4(1.0f);
+	glm::mat4 mvpMtx = viewProjMtx * modelMtx;
 	glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewProjMtx"), 1, false, (float*)&mvpMtx);
 
+
+	glm::vec3 ambient = {1,1,1};
+
 	//send over ambient color
-	//glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
+	glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
 
 
-
+	std::cerr << "Checkpoint 1" << std::endl;
 
 	//send over arrays and draw
 	glBindVertexArray(VAO);
+
+	
 
 	//send over updated positions
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	std::cerr << "Checkpoint 2" << std::endl;
+
 	//send over updated normals
 	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	std::cerr << "Checkpoint 3" << std::endl;
+
+	
 	//draw
 	glDrawElements(GL_TRIANGLES, (GLsizei)shaderIndices.size(), GL_UNSIGNED_INT, 0);
 
+
+	std::cerr << "Checkpoint 4" << std::endl;
+
 	glBindVertexArray(0);
+
+	
 
 
 	
