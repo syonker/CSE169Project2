@@ -328,8 +328,8 @@ void Skin::Update(glm::mat4 parentW) {
 		for (int j = 0; j < currV->joints.size(); j++) {
 
 			M = (currV->joints[j]->W)*(currV->joints[j]->Binv);
-			M = glm::inverse(M);
-			M = glm::transpose(M);
+			//M = glm::inverse(M);
+			//M = glm::transpose(M);
 
 			updatedNormal += (currV->weights[j] * (M*(glm::vec4(currNormal, 0.0f))));
 
@@ -339,15 +339,18 @@ void Skin::Update(glm::mat4 parentW) {
 		updatedNormal = glm::normalize(updatedNormal);
 
 		//prepare the array that will be used for drawing
-		shaderVerts[(3 * i)] = updatedNormal.x;
-		shaderVerts[(3 * i) + 1] = updatedNormal.y;
-		shaderVerts[(3 * i) + 2] = updatedNormal.z;
+		shaderNormals[(3 * i)] = updatedNormal.x;
+		shaderNormals[(3 * i) + 1] = updatedNormal.y;
+		shaderNormals[(3 * i) + 2] = updatedNormal.z;
 
 
 	}
 
 
 }
+
+
+void Skin::LoadMorph 
 
 
 

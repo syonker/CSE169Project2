@@ -99,7 +99,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 		test->Load(mycharp);
 		*/
-		test->Load("../skeletons/tube.skel");
+		test->Load("../skeletons/wasp.skel");
 
 	}
 	else {
@@ -124,8 +124,11 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 	tubeSkin = new Skin(currSkel);
 
-	tubeSkin->Load("../skins/tube.skin");
+	tubeSkin->Load("../skins/wasp.skin");
 	tubeSkin->Update(glm::mat4(1.0f));
+
+
+	tubeSkin->LoadMorph("");
 
 
 	
@@ -190,7 +193,7 @@ void Tester::Draw() {
 	//dragon->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 
 
-	currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
+	//currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 
 
 	tubeSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
