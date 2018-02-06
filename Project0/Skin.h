@@ -29,8 +29,14 @@ public:
 	std::vector<float> shaderVerts;
 	std::vector<unsigned int> shaderIndices;
 	std::vector<float> shaderNormals;
-	GLuint shader;
-	GLuint VBO, VBO2, VAO, EBO;
+	uint shader;
+	uint VBO, VBO2, VAO, EBO;
+
+	bool oldRender;
+
+	uint VertexBuffer;
+	uint NormalBuffer;
+	uint IndexBuffer;
 
 
 private:

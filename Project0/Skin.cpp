@@ -5,66 +5,109 @@ Skin::Skin(Skeleton* skel) {
 
 	skeleton = skel;
 
+	oldRender = true;
+
+	if (!oldRender) {
+		glGenBuffers(1, &VertexBuffer);
+		glGenBuffers(1, &NormalBuffer);
+		glGenBuffers(1, &IndexBuffer);
+	}
 }
 
 Skin::~Skin() {
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &VBO2);
-	glDeleteBuffers(1, &EBO);
+	if (oldRender) {
 
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &VBO2);
+		glDeleteBuffers(1, &EBO);
+
+	} 
+	else {
+
+		glDeleteBuffers(1, &IndexBuffer);
+		glDeleteBuffers(1, &NormalBuffer);
+		glDeleteBuffers(1, &VertexBuffer);
+
+	}
 }
 
 
 void Skin::BindShader() {
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &VBO2);
+	if (oldRender) {
 
-	// Bind the Vertex Array Object (VAO) first, then bind the associated buffers to it.
-	// Consider the VAO as a container for all your buffers.
-	glBindVertexArray(VAO);
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &VBO2);
 
-	// Now bind a VBO to it as a GL_ARRAY_BUFFER. The GL_ARRAY_BUFFER is an array containing relevant data to what
-	// you want to draw, such as vertices, normals, colors, etc.
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// glBufferData populates the most recently bound buffer with data starting at the 3rd argument and ending after
-	// the 2nd argument number of indices. How does OpenGL know how long an index spans? Go to glVertexAttribPointer.
+		// Bind the Vertex Array Object (VAO) first, then bind the associated buffers to it.
+		// Consider the VAO as a container for all your buffers.
+		glBindVertexArray(VAO);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
+		// Now bind a VBO to it as a GL_ARRAY_BUFFER. The GL_ARRAY_BUFFER is an array containing relevant data to what
+		// you want to draw, such as vertices, normals, colors, etc.
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		// glBufferData populates the most recently bound buffer with data starting at the 3rd argument and ending after
+		// the 2nd argument number of indices. How does OpenGL know how long an index spans? Go to glVertexAttribPointer.
 
-	// Enable the usage of layout location 0 (check the vertex shader to see what this is)
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,// This first parameter x should be the same as the number passed into the line "layout (location = x)" in the vertex shader. In this case, it's 0. Valid values are 0 to GL_MAX_UNIFORM_LOCATIONS.
-		3, // This second line tells us how any components there are per vertex. In this case, it's 3 (we have an x, y, and z component)
-		GL_FLOAT, // What type these components are
-		GL_FALSE, // GL_TRUE means the values should be normalized. GL_FALSE means they shouldn't
-		3 * sizeof(GLfloat), // Offset between consecutive indices. Since each of our vertices have 3 floats, they should have the size of 3 floats in between
-		(GLvoid*)0); // Offset of the first vertex's component. In our case it's 0 since we don't pad the vertices array with anything.
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+		// Enable the usage of layout location 0 (check the vertex shader to see what this is)
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0,// This first parameter x should be the same as the number passed into the line "layout (location = x)" in the vertex shader. In this case, it's 0. Valid values are 0 to GL_MAX_UNIFORM_LOCATIONS.
+			3, // This second line tells us how any components there are per vertex. In this case, it's 3 (we have an x, y, and z component)
+			GL_FLOAT, // What type these components are
+			GL_FALSE, // GL_TRUE means the values should be normalized. GL_FALSE means they shouldn't
+			3 * sizeof(GLfloat), // Offset between consecutive indices. Since each of our vertices have 3 floats, they should have the size of 3 floats in between
+			(GLvoid*)0); // Offset of the first vertex's component. In our case it's 0 since we don't pad the vertices array with anything.
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO2);
 
-	glEnableVertexAttribArray(1);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(1);
 
-
-	// We've sent the vertex data over to OpenGL, but there's still something missing.
-	// In what order should it draw those vertices? That's why we'll need a GL_ELEMENT_ARRAY_BUFFER for this.
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*shaderIndices.size(), &shaderIndices[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
 
-	// Unbind the currently bound buffer so that we don't accidentally make unwanted changes to it.
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// Unbind the VAO now so we don't accidentally tamper with it.
-	// NOTE: You must NEVER unbind the element array buffer associated with a VAO!
-	glBindVertexArray(0);
+		// We've sent the vertex data over to OpenGL, but there's still something missing.
+		// In what order should it draw those vertices? That's why we'll need a GL_ELEMENT_ARRAY_BUFFER for this.
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*shaderIndices.size(), &shaderIndices[0], GL_STATIC_DRAW);
+
+
+		// Unbind the currently bound buffer so that we don't accidentally make unwanted changes to it.
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// Unbind the VAO now so we don't accidentally tamper with it.
+		// NOTE: You must NEVER unbind the element array buffer associated with a VAO!
+		glBindVertexArray(0);
+
+
+	}
+	else {
+
+
+
+		// Store vertex buffer
+		glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, shaderVerts.size() * sizeof(float), &shaderVerts[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// Store normal buffer
+		glBindBuffer(GL_ARRAY_BUFFER, NormalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, shaderNormals.size() * sizeof(float), &shaderNormals[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// Store index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, shaderIndices.size() * sizeof(uint), &shaderIndices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+	}
 
 
 }
@@ -230,6 +273,9 @@ bool Skin::Load(const char *file) {
 
 	// Finish
 	token->Close();
+
+	BindShader();
+
 	return true;
 
 }
@@ -308,59 +354,107 @@ void Skin::Update(glm::mat4 parentW) {
 
 void Skin::Draw(const glm::mat4 &viewProjMtx, uint shader) {
 
-	//send things to shader
-	// Set up shader
-	glUseProgram(shader);
-	
-	glm::mat4 modelMtx = glm::mat4(1.0f);
-	
-	glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
 
-	glm::mat4 mvpMtx = viewProjMtx * modelMtx;
-	glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewProjMtx"), 1, false, (float*)&mvpMtx);
+	if (oldRender) {
 
+		//send things to shader
+		// Set up shader
+		glUseProgram(shader);
 
-	glm::vec3 ambient = {1,1,1};
+		glm::mat4 modelMtx = glm::mat4(1.0f);
 
-	//send over ambient color
-	glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
+		glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
+
+		glm::mat4 mvpMtx = viewProjMtx * modelMtx;
+		glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewProjMtx"), 1, false, (float*)&mvpMtx);
 
 
-	std::cerr << "Checkpoint 1" << std::endl;
+		glm::vec3 ambient = { 1,1,1 };
 
-	//send over arrays and draw
-	glBindVertexArray(VAO);
-
-	
-
-	//send over updated positions
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	std::cerr << "Checkpoint 2" << std::endl;
-
-	//send over updated normals
-	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	std::cerr << "Checkpoint 3" << std::endl;
-
-	
-	//draw
-	glDrawElements(GL_TRIANGLES, (GLsizei)shaderIndices.size(), GL_UNSIGNED_INT, 0);
+		//send over ambient color
+		glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
 
 
-	std::cerr << "Checkpoint 4" << std::endl;
+		//std::cerr << "Checkpoint 1" << std::endl;
 
-	glBindVertexArray(0);
+		//send over arrays and draw
+		glBindVertexArray(VAO);
 
-	
 
 
-	
-	glUseProgram(0);
+		//send over updated positions
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderVerts.size(), shaderVerts.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+		//std::cerr << "Checkpoint 2" << std::endl;
+
+		//send over updated normals
+		glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shaderNormals.size(), shaderNormals.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		//std::cerr << "Checkpoint 3" << std::endl;
+
+
+		//draw
+		glDrawElements(GL_TRIANGLES, (GLsizei)shaderIndices.size(), GL_UNSIGNED_INT, 0);
+
+
+		//std::cerr << "Checkpoint 4" << std::endl;
+
+		glBindVertexArray(0);
+
+
+
+
+
+		glUseProgram(0);
+
+	}
+	else {
+
+		glm::mat4 modelMtx = glm::mat4(1.0f);
+		glm::vec3 ambient = { 1,1,1 };
+
+		// Set up shader
+		glUseProgram(shader);
+		glUniformMatrix4fv(glGetUniformLocation(shader, "ModelMtx"), 1, false, (float*)&modelMtx);
+
+		glm::mat4 mvpMtx = viewProjMtx * modelMtx;
+		glUniformMatrix4fv(glGetUniformLocation(shader, "ModelViewProjMtx"), 1, false, (float*)&mvpMtx);
+
+		//send over ambient color
+		glUniform3fv(glGetUniformLocation(shader, "AmbientColor"), 1, &ambient[0]);
+
+		// Set up state
+		glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, NormalBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer);
+
+		uint posLoc = 0;
+		glEnableVertexAttribArray(posLoc);
+		glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(float), 0);
+
+		uint normLoc = 1;
+		glEnableVertexAttribArray(normLoc);
+		//glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)12);
+		glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, sizeof(float), 0);
+
+		// Draw geometry
+		glDrawElements(GL_TRIANGLES, (GLsizei)shaderIndices.size(), GL_UNSIGNED_INT, 0);
+
+		// Clean up state
+		glDisableVertexAttribArray(normLoc);
+		glDisableVertexAttribArray(posLoc);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glUseProgram(0);
+
+
+	}
 
 }

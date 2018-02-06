@@ -122,7 +122,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 
 
-	tubeSkin = new Skin(test);
+	tubeSkin = new Skin(currSkel);
 
 	tubeSkin->Load("../skins/tube.skin");
 	tubeSkin->Update(glm::mat4(1.0f));
