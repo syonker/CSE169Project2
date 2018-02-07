@@ -114,15 +114,55 @@ void Skin::BindShader() {
 
 
 
-bool Skin::LoadMorph(const char *file) {
+bool Skin::LoadMorph(const char *file1, const char *file2) {
 
 	int changeCount;
 
-	std::cerr << "file: " << file << std::endl;
+	std::cerr << "file: " << file1 << std::endl;
 
 	Tokenizer* token = new Tokenizer();
-	token->Open(file);
+	token->Open(file1);
 
+
+
+
+	//fill shaderVerts1 with old verts
+	for (int i = 0; i < shaderVerts.size(); i++) {
+
+		shaderVerts2.push_back(shaderVerts[i]);
+		shaderNormals2.push_back(shaderNormals[i]);
+
+	}
+
+	float x, y, z;
+
+	for (int i = 0; i < vertices.size(); i++) {
+
+		
+		x = vertices[i]->position.x;
+		y = vertices[i]->position.y;
+		z = vertices[i]->position.z;
+
+		Vertex* newVertex = new Vertex(x, y, z);
+
+		vertices2.push_back(newVertex);
+
+		x = vertices[i]->normal.x;
+		y = vertices[i]->normal.y;
+		z = vertices[i]->normal.z;
+
+		vertices2[i]->SetNormal(x, y, z);
+
+		vertices2[i]->joints = vertices[i]->joints;
+		vertices2[i]->weights = vertices[i]->weights;
+		
+		//vertices2.push_back(vertices[i]);
+
+
+	}
+
+
+	
 
 	//alter vertices
 	token->FindToken("positions");
@@ -130,7 +170,6 @@ bool Skin::LoadMorph(const char *file) {
 
 	token->FindToken("{");
 
-	float x, y, z;
 	int index;
 
 	for (int count = 1; count <= changeCount; count++) {
@@ -141,11 +180,11 @@ bool Skin::LoadMorph(const char *file) {
 		y = token->GetFloat();
 		z = token->GetFloat();
 
-		vertices[index - 1]->position = {x,y,z};
+		vertices2[index - 1]->position = {x,y,z};
 
-		shaderVerts[3*(index - 1)] = x;
-		shaderVerts[3 * (index - 1) + 1] = y;
-		shaderVerts[3 * (index - 1) + 2] = z;
+		shaderVerts2[3*(index - 1)] = x;
+		shaderVerts2[3 * (index - 1) + 1] = y;
+		shaderVerts2[3 * (index - 1) + 2] = z;
 
 	}
 
@@ -166,7 +205,7 @@ bool Skin::LoadMorph(const char *file) {
 		y = token->GetFloat();
 		z = token->GetFloat();
 
-		//normal[index - 1]->position = { x,y,z };
+		vertices2[index - 1]->SetNormal(x, y, z);
 
 		shaderNormals[3 * (index - 1)] = x;
 		shaderNormals[3 * (index - 1) + 1] = y;
@@ -176,6 +215,9 @@ bool Skin::LoadMorph(const char *file) {
 
 	token->FindToken("}");
 
+	
+
+	return true;
 
 }
 
