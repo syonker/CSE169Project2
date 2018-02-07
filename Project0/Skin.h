@@ -18,7 +18,7 @@ public:
 	~Skin();
 
 	bool Load(const char *file);
-	//bool LoadMorph(const char *file);
+	bool LoadMorph(const char *file);
 	void Update(glm::mat4 parentW);
 	void Draw(const glm::mat4 &viewProjMtx, uint shader);
 	void BindShader();

@@ -114,6 +114,72 @@ void Skin::BindShader() {
 
 
 
+bool Skin::LoadMorph(const char *file) {
+
+	int changeCount;
+
+	std::cerr << "file: " << file << std::endl;
+
+	Tokenizer* token = new Tokenizer();
+	token->Open(file);
+
+
+	//alter vertices
+	token->FindToken("positions");
+	changeCount = token->GetFloat();
+
+	token->FindToken("{");
+
+	float x, y, z;
+	int index;
+
+	for (int count = 1; count <= changeCount; count++) {
+
+		index = token->GetFloat();
+
+		x = token->GetFloat();
+		y = token->GetFloat();
+		z = token->GetFloat();
+
+		vertices[index - 1]->position = {x,y,z};
+
+		shaderVerts[3*(index - 1)] = x;
+		shaderVerts[3 * (index - 1) + 1] = y;
+		shaderVerts[3 * (index - 1) + 2] = z;
+
+	}
+
+	token->FindToken("}");
+
+
+	//alter normals
+	token->FindToken("normals");
+	changeCount = token->GetFloat();
+
+	token->FindToken("{");
+
+	for (int count = 1; count <= changeCount; count++) {
+
+		index = token->GetFloat();
+
+		x = token->GetFloat();
+		y = token->GetFloat();
+		z = token->GetFloat();
+
+		//normal[index - 1]->position = { x,y,z };
+
+		shaderNormals[3 * (index - 1)] = x;
+		shaderNormals[3 * (index - 1) + 1] = y;
+		shaderNormals[3 * (index - 1) + 2] = z;
+
+	}
+
+	token->FindToken("}");
+
+
+}
+
+
 bool Skin::Load(const char *file) {
 
 	if (file == "") {
@@ -350,7 +416,7 @@ void Skin::Update(glm::mat4 parentW) {
 }
 
 
-void Skin::LoadMorph 
+
 
 
 
