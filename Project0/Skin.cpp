@@ -180,11 +180,13 @@ bool Skin::LoadMorph(const char *file1, const char *file2) {
 		y = token->GetFloat();
 		z = token->GetFloat();
 
-		vertices2[index - 1]->position = {x,y,z};
+		vertices2[index - 1]->position.x += x;
+		vertices2[index - 1]->position.y += y;
+		vertices2[index - 1]->position.y += z;
 
-		shaderVerts2[3*(index - 1)] = x;
-		shaderVerts2[3 * (index - 1) + 1] = y;
-		shaderVerts2[3 * (index - 1) + 2] = z;
+		shaderVerts2[3*(index - 1)] += x;
+		shaderVerts2[3 * (index - 1) + 1] += y;
+		shaderVerts2[3 * (index - 1) + 2] += z;
 
 	}
 
@@ -205,11 +207,15 @@ bool Skin::LoadMorph(const char *file1, const char *file2) {
 		y = token->GetFloat();
 		z = token->GetFloat();
 
-		vertices2[index - 1]->SetNormal(x, y, z);
+		//vertices2[index - 1]->SetNormal(x, y, z);
 
-		shaderNormals[3 * (index - 1)] = x;
-		shaderNormals[3 * (index - 1) + 1] = y;
-		shaderNormals[3 * (index - 1) + 2] = z;
+		vertices2[index - 1]->normal.x += x;
+		vertices2[index - 1]->normal.y += y;
+		vertices2[index - 1]->normal.y += z;
+
+		shaderNormals[3 * (index - 1)] += x;
+		shaderNormals[3 * (index - 1) + 1] += y;
+		shaderNormals[3 * (index - 1) + 2] += z;
 
 	}
 
