@@ -63,75 +63,22 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 	// Initialize components
 	Program=new ShaderProgram("Modify.glsl",ShaderProgram::eRender);
-	//Cube = new SpinningCube;
 	Cam=new Camera;
 	Cam->SetAspect(float(WinX)/float(WinY));
 
 
+	//Prep Skeleton
+	currSkel = new Skeleton();
+	currSkel->Load("../skeletons/wasp.skel");
+	currSkel->Update(glm::mat4(1.0f));
 
-	//Prep Skeletons
-	test = new Skeleton();
-	wasp = new Skeleton();
-	dragon = new Skeleton();
-	spider = new Skeleton();
+	//Prep Skin
+	currSkin = new Skin(currSkel);
+	currSkin->Load("../skins/wasp.skin");
+	currSkin->Update(glm::mat4(1.0f));
 
-	//test->Load("");
-	//test->Load("../skeletons/test.skel");
-	
+	drawSkel = true;
 
-	//std::cerr << "argc: " << argc << std::endl;
-
-	//std::cerr << "argv: " << argv[1] << std::endl;
-
-
-	if (argc > 1) {
-
-		/*
-		std::string start = argv[1];
-
-		std::string begin = "../skeletons/";
-
-		start = begin + start;
-
-		//start = "../skeletons/" + argv[1];
-
-		const char *mycharp = start.c_str();
-
-		test->Load(mycharp);
-		*/
-		test->Load("../skeletons/tube.skel");
-
-	}
-	else {
-
-		test->Load("");
-
-	}
-
-
-	wasp->Load("../skeletons/wasp.skel");
-	dragon->Load("../skeletons/dragon.skel");
-	spider->Load("../skeletons/spider.skel");
-
-	test->Update(glm::mat4(1.0f));
-	wasp->Update(glm::mat4(1.0f));
-	dragon->Update(glm::mat4(1.0f));
-	spider->Update(glm::mat4(1.0f));
-
-	currSkel = test;
-
-
-
-	tubeSkin = new Skin(currSkel);
-
-	tubeSkin->Load("../skins/tube.skin");
-	tubeSkin->Update(glm::mat4(1.0f));
-
-
-	//tubeSkin->LoadMorph("");
-
-
-	
 
 }
 
@@ -139,7 +86,6 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 Tester::~Tester() {
 	delete Program;
-	//delete Cube;
 	delete Cam;
 
 	glFinish();
@@ -150,13 +96,10 @@ Tester::~Tester() {
 
 void Tester::Update() {
 	// Update the components in the world
-	//Cube->Update();
 	Cam->Update();
 
 	currSkel->Update(glm::mat4(1.0f));
-
-	tubeSkin->Update(glm::mat4(1.0f));
-
+	currSkin->Update(glm::mat4(1.0f));
 
 	// Tell glut to re-display the scene
 	glutSetWindow(WindowHandle);
@@ -168,8 +111,6 @@ void Tester::Update() {
 void Tester::Reset() {
 	Cam->Reset();
 	Cam->SetAspect(float(WinX)/float(WinY));
-
-	//Cube->Reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,25 +120,14 @@ void Tester::Draw() {
 	glViewport(0, 0, WinX, WinY);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float color = 1.0f;
+	if (drawSkel) {
+		float color = 1.0f;
+		color = ((float)(currSkel->activeJoint->DOFnum + 1) / (float)(currSkel->activeJoint->DOFcount));
+		currSkel->activeJoint->model->ambient = { color,color,color };
+		currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
+	}
 
-	color = ((float)(currSkel->activeJoint->DOFnum + 1) / (float)(currSkel->activeJoint->DOFcount));
-
-	currSkel->activeJoint->model->ambient = { color,color,color};
-
-	// Draw components
-	//Cube->Draw(Cam->GetViewProjectMtx(),Program->GetProgramID());
-
-	//test->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-	//wasp->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-	//dragon->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-
-
-	//currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-
-
-	tubeSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-
+	currSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 
 	// Finish drawing scene
 	glFinish();
@@ -231,16 +161,12 @@ void Tester::Keyboard(int key,int x,int y) {
 			Reset();
 			break;
 		case '1':
-			currSkel = test;
-			break;
-		case '2':
-			currSkel = wasp;
-			break;
-		case '3':
-			currSkel = dragon;
-			break;
-		case '4':
-			currSkel = spider;
+			if (drawSkel) {
+				drawSkel = false;
+			}
+			else {
+				drawSkel = true;
+			}
 			break;
 		case 'd':
 			currSkel->upSelection();

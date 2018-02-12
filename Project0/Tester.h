@@ -47,17 +47,13 @@ private:
 
 	// Components
 	ShaderProgram *Program;
-	SpinningCube *Cube;
 	Camera *Cam;
 
-	Skeleton* test;
-	Skeleton* wasp;
-	Skeleton* dragon;
-	Skeleton* spider;
 	Skeleton* currSkel;
+	Skin* currSkin;
 
-	Skin* tubeSkin;
-	Skin* waspSkin;
+	bool drawSkel;
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////

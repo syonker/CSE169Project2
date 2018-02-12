@@ -18,13 +18,13 @@ public:
 	~Skin();
 
 	bool Load(const char *file);
-	//bool LoadMorph(const char *file);
 	void Update(glm::mat4 parentW);
 	void Draw(const glm::mat4 &viewProjMtx, uint shader);
 	void BindShader();
 
 	unsigned int numV;
 	std::vector<Vertex*> vertices;
+
 	Skeleton* skeleton;
 
 	std::vector<float> shaderVerts;
@@ -33,14 +33,6 @@ public:
 	uint shader;
 	uint VBO, VBO2, VAO, EBO;
 
-	bool oldRender;
-
-	uint VertexBuffer;
-	uint NormalBuffer;
-	uint IndexBuffer;
-
-
 private:
-
 
 };
