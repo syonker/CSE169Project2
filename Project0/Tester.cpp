@@ -99,7 +99,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 		test->Load(mycharp);
 		*/
-		test->Load("../skeletons/head.skel");
+		test->Load("../skeletons/tube.skel");
 
 	}
 	else {
@@ -124,11 +124,11 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 
 	tubeSkin = new Skin(currSkel);
 
-	tubeSkin->Load("../skins/head.skin");
+	tubeSkin->Load("../skins/tube.skin");
 	tubeSkin->Update(glm::mat4(1.0f));
 
 
-	tubeSkin->LoadMorph("../morphs/head1.morph", "../morphs/head2.morph");
+	//tubeSkin->LoadMorph("");
 
 
 	
@@ -253,20 +253,6 @@ void Tester::Keyboard(int key,int x,int y) {
 			break;
 		case 's':
 			currSkel->decDOF();
-			break;
-		case 'm':
-
-			//std::cerr << "vertices: " << tubeSkin->shaderNormals.size() << std::endl;
-			//std::cerr << "vertices2: " << tubeSkin->shaderNormals2.size() << std::endl;
-
-			for (int i = 0; i < tubeSkin->vertices.size(); i++) {
-
-				tubeSkin->vertices[i] = tubeSkin->vertices2[i];
-			}
-
-			//tubeSkin->vertices = tubeSkin->vertices2;
-			tubeSkin->shaderVerts = tubeSkin->shaderVerts2;
-			tubeSkin->shaderNormals = tubeSkin->shaderNormals2;
 			break;
 	}
 }
