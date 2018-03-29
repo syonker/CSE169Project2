@@ -78,6 +78,7 @@ Tester::Tester(const char *windowTitle,int argc,char **argv) {
 	currSkin->Update(glm::mat4(1.0f));
 
 	drawSkel = true;
+	drawSkin = true;
 
 
 }
@@ -127,8 +128,9 @@ void Tester::Draw() {
 		currSkel->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
 	}
 
-	currSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
-
+	if (drawSkin) {
+		currSkin->Draw(Cam->GetViewProjectMtx(), Program->GetProgramID());
+	}
 	// Finish drawing scene
 	glFinish();
 	glutSwapBuffers();
@@ -166,6 +168,14 @@ void Tester::Keyboard(int key,int x,int y) {
 			}
 			else {
 				drawSkel = true;
+			}
+			break;
+		case '2':
+			if (drawSkin) {
+				drawSkin = false;
+			}
+			else {
+				drawSkin = true;
 			}
 			break;
 		case 'd':

@@ -53,6 +53,7 @@ private:
 	Skin* currSkin;
 
 	bool drawSkel;
+	bool drawSkin;
 
 };
 
